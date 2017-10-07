@@ -4,14 +4,14 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
 
-// app.use(express.static(__dirname + '/public'));
-
 function onConnection(socket){
   console.log('socket connected')
-  socket.broadcast.emit('board', 'new p')
+  socket.on('board_msg', (data) => {
+  	// console.log('received', data)
+  	socket.broadcast.emit('board_msg', data)
 
-  socket.on('board', (data) => {
-  	console.log('received', data)
+  	let {uid, role, name} = JSON.parse(data)
+  	socket.emit('board_msg', JSON.stringify({code: 200, type: 'response', uid, role, name}))
   })
 
   socket.on('disconnect', (user) => {
